@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[264]:
+# In[ ]:
 
 
 import sympy
@@ -10,7 +10,7 @@ import math
 import decimal
 import numpy as np
 import matplotlib.pyplot as plt
-from sympy import Symbol
+from sympy import Symbol, symbols, plot_implicit
 from sympy import Rational
 from sympy.geometry import Point
 from sympy.core.symbol import _symbol
@@ -21,11 +21,11 @@ class Hyperbola:
         self.hradius = hradius
         self.vradius = vradius
         self.angle = 0
-        self.centre = Point(0,0)
+        self._centre = Point(0,0)
         if angle:
             self.angle = angle
         if centre:
-            self.centre = centre
+            self._centre = centre
     
     @property
     def focus_distance(self):
@@ -39,35 +39,50 @@ class Hyperbola:
     def eccentricity(self):
         return self.focus_distance / self.hradius
     
-    def centre(self, x1, y1):
-        self.centre = Point(x1, y1)
-        return 0
+    @property
+    def centre(self):
+        return self._centre
     
-    def equation(self, x, y, expression=False):
-        x = Symbol(x)
-        y = Symbol(y)
-        x = x - self.centre[0]
-        y = y - self.centre[1]
+    def move(self, x1, y1):
+        self._centre = Point(x1, y1)
+    
+    def equation(self, x=None, y=None, expression=False):
+        if x:
+            x = Symbol(x)
+        else:
+            x = symbols('x')
+        if y:
+            y = Symbol(y)
+        else:
+            y = symbols('y')
+        x = x - self._centre[0]
+        y = y - self._centre[1]
         x = x * sympy.cos(self.angle) + y * sympy.sin(self.angle)
         y = - x * sympy.sin(self.angle) + y * sympy.cos(self.angle)
         if not expression:
             t1 = (x * self.vradius) ** 2
             t2 = (y * self.hradius) ** 2
-            return t2 - t1 - (self.hradius * self.vradius) ** 2 
+            return (t1 - t2 - (self.hradius * self.vradius) ** 2).simplify()
         t1 = (x / self.hradius) ** 2
         t2 = (y / self.vradius) ** 2
-        return sympy.Eq(t1 - t2, 1)
+        return sympy.Eq((t1 - t2).simplify(), 1)
     
-    def asymptote(self, x, y, expression=False):
-        x = Symbol(x)
-        y = Symbol(y)
+    def asymptote(self, x=None, y=None, expression=False):
+        if x:
+            x = Symbol(x)
+        else:
+            x = symbols('x')
+        if y:
+            y = Symbol(y)
+        else:
+            y = symbols('y')
         a1 = self.vradius/self.hradius * x
         a2 = - self.vradius/self.hradius * x
         if not expression:
             return y - a1, y - a2
         return sympy.Eq(y, a1), sympy.Eq(y, a2)
     
-    def enclose_point(self, x1, y1):
+    def border_point(self, x1, y1):
         p = Point(x1, y1)
         if (x1 ** 2 / self.hradius - y1 ** 2 / self.vradius == 1):
             return True
@@ -85,7 +100,6 @@ class Hyperbola:
             self.hradius = x * self.hradius
         if y:
             self.vradius = y * self.vradius
-        return 0
     
     def draw(self, xmin, xmax):
         x = symbols('x')
@@ -99,15 +113,6 @@ class Hyperbola:
         p1.append(p3[0])
         p1.show()
         
-    def rotate(self, phi, measure=True):
-        if not measure:
-            phi = (phi * sympy.pi) / 180
+    def rotate(self, phi):
         self.angle = phi
-        return 0
-
-
-# In[ ]:
-
-
-
 
