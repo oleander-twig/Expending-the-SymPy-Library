@@ -57,8 +57,9 @@ class Hyperbola:
             y = symbols('y')
         x = x - self._centre[0]
         y = y - self._centre[1]
-        x = x * sympy.cos(self.angle) + y * sympy.sin(self.angle)
+        x1 = x * sympy.cos(self.angle) + y * sympy.sin(self.angle)
         y = - x * sympy.sin(self.angle) + y * sympy.cos(self.angle)
+        x = x1
         if not expression:
             t1 = (x * self.vradius) ** 2
             t2 = (y * self.hradius) ** 2
@@ -76,6 +77,11 @@ class Hyperbola:
             y = Symbol(y)
         else:
             y = symbols('y')
+        x = x - self._centre[0]
+        y = y - self._centre[1]
+        x1 = x * sympy.cos(self.angle) + y * sympy.sin(self.angle)
+        y = - x * sympy.sin(self.angle) + y * sympy.cos(self.angle)
+        x = x1
         a1 = self.vradius/self.hradius * x
         a2 = - self.vradius/self.hradius * x
         if not expression:
@@ -101,14 +107,14 @@ class Hyperbola:
         if y:
             self.vradius = y * self.vradius
     
-    def draw(self, xmin, xmax):
+    def draw(self, xmin, xmax, ymin, ymax):
         x = symbols('x')
         y = symbols('y')
         function = self.equation('x', 'y', False)
         as1, as2 = self.asymptote('x', 'y', False)
-        p1 = plot_implicit(function, (x, xmin, xmax), title='Graph of the Hyperbola', line_color='blue', show=False)
-        p2 = plot_implicit(as1, (x, xmin, xmax), line_color='crimson', show=False)
-        p3 = plot_implicit(as2, (x, xmin, xmax), line_color='crimson', show=False)
+        p1 = plot_implicit(function, (x, xmin, xmax), (y, ymin, ymax), title='Graph of the Hyperbola', line_color='blue', show=False)
+        p2 = plot_implicit(as1, (x, xmin, xmax), (y, ymin, ymax), line_color='crimson', show=False)
+        p3 = plot_implicit(as2, (x, xmin, xmax), (y, ymin, ymax), line_color='crimson', show=False)
         p1.append(p2[0])
         p1.append(p3[0])
         p1.show()
